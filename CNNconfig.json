@@ -1,0 +1,13 @@
+
+{
+  "INFO": {
+    "net name": "CNN",
+    "batch size": 8,
+    "LR":1e-2,
+    "num epochs": 100
+  },
+  "CNN": {
+   "image size": [3,256,256]
+  }
+
+}

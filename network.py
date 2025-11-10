@@ -131,16 +131,3 @@ class SimpleCNN(nn.Module):
         x = self.cnn_layers(x)
         x = self.fc_layers(x)
         return x
-# def main():
-#
-#     image = Image.open('/home/mahdieh/Documents/Project/COVID_transformer/Covid19-dataset/train/Normal/010.jpeg')
-#     image = image.convert('RGB')
-#     image = image.resize((64,64))
-#     tensor_image = T.ToTensor()(image).unsqueeze(0)
-#
-#     vit=VIT(tensor_image.size()[1:],748, 4,1, 3)
-#     prediction = vit(tensor_image)
-#     print(prediction)
-#
-# if __name__ == '__main__':
-#     main()

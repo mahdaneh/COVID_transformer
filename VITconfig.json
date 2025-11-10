@@ -1,0 +1,19 @@
+
+{
+  "INFO": {
+    "net name": "VIT",
+    "batch size": 256,
+    "LR":1e-5,
+    "epochs": 50,
+    "Kfolds": 3
+  },
+
+    "VIT":{
+        "image size": [3,256,256],
+        "patch size": 32,
+        "embd dim":2048,
+        "num heads":4,
+        "num layers":4,
+        "num classes":3
+    }
+}
