@@ -2,10 +2,10 @@
 {
   "INFO": {
     "net name": "VIT",
-    "batch size": 256,
+    "batch size": 300,
     "LR":1e-5,
-    "epochs": 50,
-    "Kfolds": 3
+    "epochs": 100,
+    "data dir": "/home/mahdieh/Documents/Datasets/COVID/covid19-xrays"
   },
 
     "VIT":{
