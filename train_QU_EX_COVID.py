@@ -11,7 +11,7 @@ from tqdm.contrib.logging import logging_redirect_tqdm
 import dataset_repo as d_repo
 import util as util
 from network import VIT, SimpleCNN
-
+import Operations as op
 CONFIG_FILE = "configs/VIT_QU_EX.json"
 WEIGHTS_FOLDER = Path("weights/")
 LOG_FOLDER = Path("logs/")
@@ -20,7 +20,7 @@ LOG_FOLDER = Path("logs/")
 def main():
     with open(CONFIG_FILE, "r") as config_file:
         config = json.load(config_file)
-
+    epochs = config["INFO"]["epochs"]
     net_name = config["INFO"]["net name"]
     wandb.init(project="COVID", name=CONFIG_FILE, config=config)
 
@@ -79,69 +79,16 @@ def main():
     logger.info("%s model on device: %s", net_name, next(network.parameters()).is_cuda)
     optimizer = torch.optim.AdamW(network.parameters(), lr=config["INFO"]["LR"])
     scheduler = util.WrmUpCosinScheduler(
-        optimizer, 20, config["INFO"]["epochs"], config["INFO"]["LR"]
+        optimizer, 20, epochs, config["INFO"]["LR"]
     )
 
-    CE_loss = torch.nn.CrossEntropyLoss()
+
     with logging_redirect_tqdm():
-        pbar = tqdm(range(config["INFO"]["epochs"]))
-        for epoch in pbar:
-            tr_acc, tr_loss, val_acc, val_loss = 0, 0, 0, 0
-            network.train()
-            for b, data in enumerate(train_loader):
-                images = data[0].to(device)
-                labels = data[1].to(device)
-
-                optimizer.zero_grad()
-                prediction = network(images)
-                loss = CE_loss(prediction, labels)
-                loss.backward()
-                optimizer.step()
-                tr_loss += loss.item()
-                class_prediction = torch.argmax(prediction, dim=1)
-
-                tr_acc += torch.mean(
-                    torch.where(class_prediction == labels, 1.0, 0.0)
-                ).item()
-            scheduler.step()
-            info_log = {
-                "Epoch": epoch,
-                "LR": scheduler.get_last_lr(),
-                "tr_loss": tr_loss / (b + 1),
-                "tr_acc": tr_acc / (b + 1),
-            }
-
-            pbar.set_description(str(info_log))
-
-            torch.save(
-                network.state_dict(),
-                CONFIG_FILE.replace("config", "weights").replace(
-                    ".json", "_checkpoint_%d.pth" % epoch
-                ),
-            )
-            if epoch % 5 == 0:  # every 5 epochs
-                network.eval()
-                with torch.no_grad():
-                    for eval_b, data in enumerate(val_loader):
-                        images, labels = data[0].to(device), data[1].to(device)
-                        prediction = network(images)
-                        loss = CE_loss(prediction, labels)
-                        val_loss += loss.item()
-                        class_prediction = torch.argmax(prediction, dim=1)
-                        val_acc += torch.mean(
-                            torch.where(class_prediction == labels, 1.0, 0.0)
-                        ).item()
-
-                info_log |= {
-                    "eval_loss": val_loss / (eval_b + 1),
-                    "eval_acc": val_acc / (eval_b + 1),
-                }
-                pbar.set_description(str(info_log))
-
+            info_log = op.train_eval(WEIGHTS_FOLDER, train_loader,
+              val_loader, network, optimizer, scheduler, epochs )
             logger.info(info_log)
             wandb.log(info_log)
 
-        # end of full training
 
 
 if __name__ == "__main__":
