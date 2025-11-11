@@ -12,8 +12,9 @@ import dataset_repo as d_repo
 import util as util
 from network import VIT, SimpleCNN
 
-CONFIG_FILE = "VIT_QU_EX_config.json"
+CONFIG_FILE = "configs/VIT_QU_EX.json"
 WEIGHTS_FOLDER = Path("weights/")
+LOG_FOLDER = Path("logs/")
 
 
 def main():
@@ -25,7 +26,7 @@ def main():
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(
-        filename=CONFIG_FILE.replace("config.json", "_loging.log"),
+        filename=CONFIG_FILE.replace("configs", "logs").replace(".json", ".log"),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         level=logging.INFO,
     )
@@ -115,7 +116,9 @@ def main():
             torch.save(
                 network.state_dict(),
                 WEIGHTS_FOLDER.joinpath(
-                    CONFIG_FILE.replace(".json", "_checkpoint_%d.pth" % epoch)
+                    CONFIG_FILE.replace("config", "weights").replace(
+                        ".json", "_checkpoint_%d.pth" % epoch
+                    )
                 ),
             )
             if epoch % 5 == 0:  # every 5 epochs

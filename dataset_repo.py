@@ -31,15 +31,20 @@ class CovidDataset(Dataset):
                     A.RandomCropFromBorders(),
                     A.HorizontalFlip(p=0.5),
                     A.Resize(self.image_size[0], self.image_size[1]),
+                    A.Normalize(),
                     A.ToTensorV2(),
                 ]
             )
 
         else:
             transform = A.Compose(
-                [A.Resize(self.image_size[0], self.image_size[1]), A.ToTensorV2()]
+                [
+                    A.Resize(self.image_size[0], self.image_size[1]),
+                    A.Normalize(),
+                    A.ToTensorV2(),
+                ]
             )
-        transformed_image = transform(image=image)["image"] / 255.0
+        transformed_image = transform(image=image)["image"]
 
         return transformed_image, torch.tensor(label, dtype=torch.uint8)
 
