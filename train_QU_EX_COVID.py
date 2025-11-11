@@ -115,10 +115,8 @@ def main():
 
             torch.save(
                 network.state_dict(),
-                WEIGHTS_FOLDER.joinpath(
-                    CONFIG_FILE.replace("config", "weights").replace(
-                        ".json", "_checkpoint_%d.pth" % epoch
-                    )
+                CONFIG_FILE.replace("config", "weights").replace(
+                    ".json", "_checkpoint_%d.pth" % epoch
                 ),
             )
             if epoch % 5 == 0:  # every 5 epochs
