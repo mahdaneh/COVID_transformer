@@ -20,7 +20,7 @@ import dataset_repo as d_repo
 from network import VIT, SimpleCNN
 import json
 
-CONFIG_FILE = "VITconfig.json"
+CONFIG_FILE = "configs/VITconfig.json"
 DATA_DIR = "/home/mahdieh/Documents/Datasets/COVID/covid19-xrays"
 with open(CONFIG_FILE, "r") as config_file:
     config = json.load(config_file)
