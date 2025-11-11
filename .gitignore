@@ -1,0 +1,19 @@
+*.png
+*.jpeg
+*.jpg
+*.log
+
+*.ipynb
+*.pth
+# Other common ignores
+.env
+.DS_Store
+
+/wandb/
+/COVID-QU-Ex/
+/Covid19-dataset/
+/covid19-xrays/
+.idea/
+/__pycache__/
+/weights/
+/logs/
