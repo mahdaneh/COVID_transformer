@@ -12,7 +12,7 @@ class CovidDataset(Dataset):
         super().__init__()
         self.root_data_path = Path(data_dict["data dir"])
         self._label_names = data_dict["label names"]
-        self.image_size = tuple(image_size)
+        self.image_size = tuple(data_dict["image size"][1:])
         self.training = training
         self.imgPath_lbl = []
 
@@ -60,8 +60,8 @@ class Covid_Xray(CovidDataset):
 
 
 class Covid_QU_Ex(CovidDataset):
-    def __init__(self, data_dict, image_size, training, mode="train") -> None:
-        super().__init__(data_dict, image_size, training)
+    def __init__(self, data_dict, training, mode="train") -> None:
+        super().__init__(data_dict, training)
 
         if mode == "train":
             self.root_data_path = self.root_data_path.joinpath("Train")

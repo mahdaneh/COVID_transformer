@@ -84,7 +84,7 @@ class TransformerEncoderBlock(nn.Module):
 class VIT(nn.Module):
     def __init__(self, config):
         embed_dim = config["embd dim"]
-        image_size = config["image size"]
+        image_size = config["input size"]
         patch_size = config["patch size"]
         num_layers = config["num layers"]
         num_classes = config["num classes"]
