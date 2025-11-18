@@ -20,6 +20,8 @@ CONFIG_FILE = (
 )
 WEIGHTS_FOLDER = Path("weights/")
 LOG_FOLDER = Path("logs/")
+WB_PROJECT = "XRay-Classification"
+RUN_NAME = CONFIG_FILE.removeprefix("configs/").removesuffix(".json")
 
 
 def main():
@@ -27,7 +29,11 @@ def main():
         config = json.load(config_file)
     epochs = config["INFO"]["epochs"]
     net_name = config["INFO"]["net name"]
-    wandb.init(project="COVID", name=CONFIG_FILE, config=config)
+    wandb.init(
+        project=WB_PROJECT,
+        name=RUN_NAME,
+        config=config,
+    )
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(
@@ -107,6 +113,7 @@ def main():
     with logging_redirect_tqdm():
         info_log = op.train_eval(
             WEIGHTS_FOLDER,
+            RUN_NAME,
             train_loader,
             val_loader,
             network,

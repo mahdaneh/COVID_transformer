@@ -4,7 +4,14 @@ from tqdm import tqdm
 
 
 def train_eval(
-    WEIGHTS_FOLDER, train_loader, val_loader, network, optimizer, scheduler, epochs
+    weights_fldr,
+    run_name,
+    train_loader,
+    val_loader,
+    network,
+    optimizer,
+    scheduler,
+    epochs,
 ):
     CE_loss = torch.nn.CrossEntropyLoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,7 +45,8 @@ def train_eval(
         pbar.set_description(str(info_log))
 
         torch.save(
-            network.state_dict(), WEIGHTS_FOLDER.joinpath("_checkpoint_%d.pth" % epoch)
+            network.state_dict(),
+            weights_fldr.joinpath("%s_checkpoint_%d.pth" % (run_name, epoch)),
         )
         if epoch % 5 == 0:  # every 5 epochs
             network.eval()
