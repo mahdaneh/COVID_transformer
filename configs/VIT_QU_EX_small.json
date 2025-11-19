@@ -5,7 +5,7 @@
     "net name": "VIT",
     "batch size": 400,
     "accumulation step": 8,
-    "LR":1e-7,
+    "LR":1e-6,
     "warmup epochs": 20,
     "epochs": 100
 

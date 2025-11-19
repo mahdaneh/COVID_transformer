@@ -1,4 +1,4 @@
-# COVID_transformer [under development]
+# COVID_transformer [To be Continued]
 
 A Vision Transformer (ViT)–based deep learning project for classifying chest X-ray (CXR) images 
 into three categories: **COVID-19**, **Normal**, and **Non-COVID**.
@@ -14,11 +14,17 @@ Covid-QU-EU dataset is used for training and evaluation purposes. You can read a
 ### Notes
 - AdamW optimizer with weight decay (AdamW provides better regularization than Adam.)
 - Ensure dataset class balance to avoid biased predictions.
-- Warm-up + cosine annealing learning rate strategy
+- Warm-up + cosine annealing learning rate strategy with small base learning rate
 
-Train each model using its corresponding config file, available in `configs/` folder:
+Train each model using its corresponding config file, available in `configs/` folder. For example:
 
-``python train_QU_EX_COVID.py --config configs/your_config.json``
+``python run_train_eval.py --config configs/your_config.json``
+
+
+3 models-- VIT, Resnet18, and VIT with Res18 backbone (frozen) are trained and evaluated on Covid-QU-EX dataset.  
+
+![Model Comparison](docs/comparison.png)
+
 
 ### Evaluation
 
