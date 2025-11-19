@@ -4,7 +4,6 @@ import json
 
 
 def run_agent():
-
     #
     # print("======== resnet_vit")
     # res_vit = subprocess.check_output(
@@ -15,6 +14,7 @@ def run_agent():
     vit = subprocess.check_output(
         ["python3", "run_train_eval.py", "--config", "configs/VIT_QU_EX_small.json"]
     )
+
 
 if __name__ == "__main__":
     run_agent()

@@ -15,7 +15,8 @@ def train_eval(
     epochs,
     accumulation_step,
     logger,
-    wandb,args
+    wandb,
+    args,
 ):
     CE_loss = torch.nn.CrossEntropyLoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

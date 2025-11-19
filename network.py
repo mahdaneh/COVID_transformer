@@ -65,8 +65,11 @@ class TransformerEncoderBlock(nn.Module):
         self.heads = nn.ModuleList(
             [HeadAttention(embed_dim, head_dim, dropout=0.1) for _ in range(num_head)]
         )
-        self.mlp = nn.Sequential(nn.Linear(embed_dim, mlp_dim, bias=True),
-                                 nn.GELU(), nn.Linear(mlp_dim, embed_dim, bias=True))
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, mlp_dim, bias=True),
+            nn.GELU(),
+            nn.Linear(mlp_dim, embed_dim, bias=True),
+        )
         self.layer_norm = nn.LayerNorm(embed_dim)
         self.dropout = nn.Dropout(0.1)
 
@@ -102,7 +105,10 @@ class VIT(nn.Module):
             image_size, patch_size=patch_size, emb_dim=embed_dim
         )
         self.encoders = nn.ModuleList(
-            [TransformerEncoderBlock(embed_dim, mlp_dim, num_heads) for _ in range(num_layers)]
+            [
+                TransformerEncoderBlock(embed_dim, mlp_dim, num_heads)
+                for _ in range(num_layers)
+            ]
         )
         self.MLP_cls = nn.Sequential(
             nn.Linear(embed_dim, num_classes, bias=True), nn.Softmax(dim=1)

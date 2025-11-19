@@ -17,7 +17,7 @@ import pdb
 import argparse
 
 
-def train_eval(config_file,args):
+def train_eval(config_file, args):
     weights_folder = Path("weights/")
     run_name = config_file.removeprefix("configs/").removesuffix(".json")
 
@@ -125,20 +125,23 @@ def train_eval(config_file,args):
         epochs,
         accumulation_step,
         logger,
-        wandb,args
+        wandb,
+        args,
     )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args_def = {
-        "config": {"type": str, "default":""},
+        "config": {"type": str, "default": ""},
         "restart": {"type": bool, "default": True},
-        "start_epoch": {"type": int, "default": 1}
+        "start_epoch": {"type": int, "default": 1},
     }
     for k, v in args_def.items():
         if v != args_def[k]["default"]:
-            parser.add_argument(f"--{k}", default=args_def[k]["default"], type=args_def[k]["type"])
+            parser.add_argument(
+                f"--{k}", default=args_def[k]["default"], type=args_def[k]["type"]
+            )
 
     args = parser.parse_args()
 
