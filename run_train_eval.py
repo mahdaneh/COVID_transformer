@@ -7,37 +7,39 @@ import wandb
 from torch.utils.data import DataLoader
 from torchvision import models
 from torch import nn
-from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
+
 
 import dataset_repo as d_repo
 import util as util
-from network import VIT, SimpleCNN
+from network import VIT
 import Operations as op
-
-CONFIG_FILE = (
-    "configs/Res_VIT.json"  #'configs/Resnet_QU_EX.json'#"configs/VIT_QU_EX.json"
-)
-WEIGHTS_FOLDER = Path("weights/")
-LOG_FOLDER = Path("logs/")
-WB_PROJECT = "XRay-Classification"
-RUN_NAME = CONFIG_FILE.removeprefix("configs/").removesuffix(".json")
+import pdb
+import argparse
 
 
-def main():
-    with open(CONFIG_FILE, "r") as config_file:
-        config = json.load(config_file)
+def train_eval(config_file,args):
+    weights_folder = Path("weights/")
+    run_name = config_file.removeprefix("configs/").removesuffix(".json")
+
+    with open(config_file, "r") as cf:
+        config = json.load(cf)
     epochs = config["INFO"]["epochs"]
+    accumulation_step = config["INFO"]["accumulation step"]
+    log_filename = Path(config_file.replace("configs", "logs").replace(".json", ".log"))
+
+    print("Logging to {}".format(log_filename))
     net_name = config["INFO"]["net name"]
+    wb_project_name = config["INFO"]["wandb project"]
+
     wandb.init(
-        project=WB_PROJECT,
-        name=RUN_NAME,
+        project=wb_project_name,
+        name=run_name,
         config=config,
     )
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(
-        filename=CONFIG_FILE.replace("configs", "logs").replace(".json", ".log"),
+        filename=log_filename,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         level=logging.INFO,
     )
@@ -83,7 +85,7 @@ def main():
         network = VIT(config["VIT"]).to(device)
     elif net_name == "ResNet":
         network = models.resnet18(
-            weights=models.ResNet18_Weights.DEFAULT
+            weights=models.ResNet18_Weights.IMAGENET1K_V1
         )  # or pretrained=True in older versions
 
         # Replace the final fully connected (fc) layer:
@@ -97,33 +99,47 @@ def main():
         network.fc = fc_layers
 
     elif net_name == "resnet_VIT":
-        resnet = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+        resnet = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         backbone = nn.Sequential(*list(resnet.children())[:4])
+        backbone.requires_grad_(False)  # to freeze backbone
         vit = VIT(config["VIT"]).to(device)
-        # module_dict = nn.ModuleDict({"backbone":backbone,
-        #     "VIT": vit})
         network = nn.Sequential(backbone, vit)
 
+    # network = torch.compile(network)
     network.to(device)
     wandb.watch(network, log="all")
     logger.info("%s model on device: %s", net_name, next(network.parameters()).is_cuda)
     optimizer = torch.optim.AdamW(network.parameters(), lr=config["INFO"]["LR"])
-    scheduler = util.WrmUpCosinScheduler(optimizer, 20, epochs, config["INFO"]["LR"])
+    scheduler = util.WrmUpCosinScheduler(
+        optimizer, config["INFO"]["warmup epochs"], epochs, config["INFO"]["LR"]
+    )
 
-    with logging_redirect_tqdm():
-        info_log = op.train_eval(
-            WEIGHTS_FOLDER,
-            RUN_NAME,
-            train_loader,
-            val_loader,
-            network,
-            optimizer,
-            scheduler,
-            epochs,
-        )
-        logger.info(info_log)
-        wandb.log(info_log)
+    info_log = op.train_eval(
+        weights_folder,
+        run_name,
+        train_loader,
+        val_loader,
+        network,
+        optimizer,
+        scheduler,
+        epochs,
+        accumulation_step,
+        logger,
+        wandb,args
+    )
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    args_def = {
+        "config": {"type": str, "default":""},
+        "restart": {"type": bool, "default": True},
+        "start_epoch": {"type": int, "default": 1}
+    }
+    for k, v in args_def.items():
+        if v != args_def[k]["default"]:
+            parser.add_argument(f"--{k}", default=args_def[k]["default"], type=args_def[k]["type"])
+
+    args = parser.parse_args()
+
+    train_eval(args.config, args)

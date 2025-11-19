@@ -2,9 +2,9 @@
 {
   "INFO": {
     "wandb project": "XRay-Classification",
-    "net name": "ResNet",
-    "batch size": 256,
-    "accumulation step": 1,
+    "net name": "VIT",
+    "batch size": 600,
+    "accumulation step": 8,
     "LR":1e-6,
     "warmup epochs": 20,
     "epochs": 100
@@ -19,8 +19,13 @@
 
   },
 
-    "ResNet":{
+    "VIT":{
         "input size": [3,224,224],
+        "patch size": 32,
+        "embd dim":192,
+        "mlp dim": 768,
+        "num heads":3,
+        "num layers":12,
         "num classes":3
     }
 }
