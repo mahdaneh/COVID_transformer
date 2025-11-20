@@ -1,17 +1,22 @@
 # COVID_transformer [To be Continued]
 
-A Vision Transformer (ViT)–based deep learning project for classifying chest X-ray (CXR) images
-into three categories: **COVID-19**, **Normal**, and **Non-COVID**.
+This project implements a Vision Transformer (ViT) for COVID-19 detection from chest X-rays, and benchmarks performance against:
+
+- **ResNet-18** (standard CNN)  
+- **ResNet-18 + ViT head** (where the ResNet backbone is frozen and the ViT head is trained)  
+
+The goal is to explore the effectiveness of transformer-based models on medical imaging, particularly in distinguishing COVID-19 cases in CXR data.
 
 ## Overview
 
 This repository implements a Vision Transformer and compare it with Resnet18 and a Resnet18 backbone with VIT head
 models on chest xray images.
 
-### Data
+### Dataset 
+- The repository uses the **COVID-QU-Ex** dataset, which contains 33,920 chest X-ray images [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu).
+- This is a multiclass dataset with classes: COVID-19, Normal, and Pneumonia/Non-COVID.
+- The dataset comprises three sets: Train, Val, Test. 
 
-Covid-QU-EU dataset is used for training and evaluation purposes. You can read about this data
-set [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu)
 ![Sample frequencies per class across datasets](docs/data_summary.png)
 
 ### Training
