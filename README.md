@@ -14,24 +14,25 @@ Covid-QU-EU dataset is used for training and evaluation purposes. You can read a
 set [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu)
 ![Sample frequencies per class across datasets](docs/data_summary.png)
 
-### Notes
-
+### Training
+3 models including VIT, Resnet18, and VIT head with Res18 backbone (frozen) are trained and evaluated on Covid-QU-EX
+dataset.
+#### Notes
 - AdamW optimizer with weight decay (AdamW provides better regularization than Adam.)
 - Ensure dataset class balance to avoid biased predictions.
 - Warm-up + cosine annealing learning rate strategy with small base learning rate
 
 Train each model using its corresponding config file, available in `configs/` folder. For example:
 
-``python run_train_eval.py --config configs/your_config.json``
-
-3 models including VIT, Resnet18, and VIT head with Res18 backbone (frozen) are trained and evaluated on Covid-QU-EX
-dataset.
+``python run_train_eval.py --config configs/VIT_QU_EX.json``
+To train other models, you could find other config files in ``config`` folder.
 
 ![Training curves of the models](docs/comparison.png)
 
 ### Evaluation
 
-Use utilities in util.py to compute:
+On "Test" set, we compare the three models by acc, precision, recall, f_score. The confusion
+matrices als show the models performance for classes.  
 
 | Model Name   | Acc    | Precision   | Recall   | f_score   |
 |--------------|--------|-------------|----------|-----------|
