@@ -40,8 +40,8 @@ Use utilities in util.py to compute:
 | Res18+VIT    | 68.6   | 69.5        | 68.7     | 68.8      |
 | ------------ | ------ | ----------- | -------- | --------- |
 
-| Res18                                | VIT                               | Res18+VIT                             |
-|--------------------------------------|-----------------------------------|---------------------------------------|
-| [](docs/confusion_matrix_Resnet.png) | [](docs/confusion_matrix_VIT.png) | [](docs/confusion_matrix_Res_VIT.png) |
+| Res18                                 | VIT                                | Res18+VIT                              |
+|---------------------------------------|------------------------------------|----------------------------------------|
+| ![](docs/confusion_matrix_Resnet.png) | ![](docs/confusion_matrix_VIT.png) | ![](docs/confusion_matrix_Res_VIT.png) |
 
 
