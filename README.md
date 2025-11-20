@@ -1,4 +1,4 @@
-# COVID_transformer [To be Continued]
+# COVID_transformer 
 
 This project implements a Vision Transformer (ViT) for COVID-19 detection from chest X-rays, and benchmarks performance against:
 
