@@ -1,10 +1,5 @@
-import os
-
-
 import torch
 import torch.nn as nn
-from PIL import Image
-from torchvision import transforms as T
 
 
 class InputEmbbeding(nn.Module):
@@ -65,11 +60,15 @@ class TransformerEncoderBlock(nn.Module):
         self.heads = nn.ModuleList(
             [HeadAttention(embed_dim, head_dim, dropout=0.1) for _ in range(num_head)]
         )
-        self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, mlp_dim, bias=True),
-            nn.GELU(),
-            nn.Linear(mlp_dim, embed_dim, bias=True),
-        )
+        if embed_dim != mlp_dim:
+            self.mlp = nn.Sequential(
+                nn.Linear(embed_dim, mlp_dim, bias=True),
+                nn.GELU(),
+                nn.Linear(mlp_dim, embed_dim, bias=True),
+            )
+        else:
+            # experimentally I found using a onelayer mlp is better than a 2 layers mlp.
+            self.mlp = nn.Sequential(nn.Linear(embed_dim, embed_dim, bias=True))
         self.layer_norm = nn.LayerNorm(embed_dim)
         self.dropout = nn.Dropout(0.1)
 
@@ -88,7 +87,11 @@ class TransformerEncoderBlock(nn.Module):
 class VIT(nn.Module):
     def __init__(self, config):
         embed_dim = config["embd dim"]
-        mlp_dim = config["mlp dim"]
+        # experimentally I found using a onelayer mlp is better than a 2 layers mlp.
+        if "mlp dim" not in config:
+            mlp_dim = config["embd dim"]
+        else:
+            mlp_dim = config["mlp dim"]
         image_size = config["input size"]
         patch_size = config["patch size"]
         num_layers = config["num layers"]

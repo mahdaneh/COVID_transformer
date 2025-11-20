@@ -1,27 +1,34 @@
-
 {
   "INFO": {
     "net name": "resnet_VIT",
     "batch size": 256,
-    "LR":1e-5,
+    "LR": 1e-5,
     "epochs": 100,
     "data dir": "/home/mahdieh/Documents/Datasets/COVID/covid19-xrays"
   },
   "DATA": {
     "data dir": "/home/mahdieh/Documents/Datasets/COVID/COVID-QU-Ex/Lung_Segmentation_Data",
-    "label names": ["COVID","Non-COVID","Normal"],
-    "image size": [3, 224, 224]
-
-
-
+    "label names": [
+      "COVID",
+      "Non-COVID",
+      "Normal"
+    ],
+    "image size": [
+      3,
+      224,
+      224
+    ]
   },
-
-    "VIT":{
-        "input size": [64,56,56],
-        "patch size":16,
-        "embd dim":2048,
-        "num heads":4,
-        "num layers":4,
-        "num classes":3
-    }
+  "VIT": {
+    "input size": [
+      64,
+      56,
+      56
+    ],
+    "patch size": 16,
+    "embd dim": 2048,
+    "num heads": 4,
+    "num layers": 4,
+    "num classes": 3
+  }
 }

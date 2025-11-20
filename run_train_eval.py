@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 from pathlib import Path
@@ -5,16 +6,10 @@ from pathlib import Path
 import torch
 import wandb
 from torch.utils.data import DataLoader
-from torchvision import models
-from torch import nn
 
-
+import Operations as op
 import dataset_repo as d_repo
 import util as util
-from network import VIT
-import Operations as op
-import pdb
-import argparse
 
 
 def train_eval(config_file, args):
@@ -28,7 +23,7 @@ def train_eval(config_file, args):
     log_filename = Path(config_file.replace("configs", "logs").replace(".json", ".log"))
 
     print("Logging to {}".format(log_filename))
-    net_name = config["INFO"]["net name"]
+
     wb_project_name = config["INFO"]["wandb project"]
 
     wandb.init(
@@ -49,8 +44,8 @@ def train_eval(config_file, args):
 
     train_dataset = d_repo.Covid_QU_Ex(
         config["DATA"],
-        training=True,
-        mode="train",
+        training=False,
+        mode="test",
     )
     val_dataset = d_repo.Covid_QU_Ex(
         config["DATA"],
@@ -81,34 +76,13 @@ def train_eval(config_file, args):
         persistent_workers=True,
     )
 
-    if net_name == "VIT":
-        network = VIT(config["VIT"]).to(device)
-    elif net_name == "ResNet":
-        network = models.resnet18(
-            weights=models.ResNet18_Weights.IMAGENET1K_V1
-        )  # or pretrained=True in older versions
-
-        # Replace the final fully connected (fc) layer:
-        in_features = network.fc.in_features
-        fc_layers = torch.nn.Sequential(
-            nn.Linear(in_features, 128),
-            nn.ReLU(),
-            nn.Linear(128, 3),
-            nn.Softmax(dim=1),
-        )
-        network.fc = fc_layers
-
-    elif net_name == "resnet_VIT":
-        resnet = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
-        backbone = nn.Sequential(*list(resnet.children())[:4])
-        backbone.requires_grad_(False)  # to freeze backbone
-        vit = VIT(config["VIT"]).to(device)
-        network = nn.Sequential(backbone, vit)
-
+    network = op.build_model(config)
     # network = torch.compile(network)
     network.to(device)
+
     wandb.watch(network, log="all")
-    logger.info("%s model on device: %s", net_name, next(network.parameters()).is_cuda)
+    logger.info("%s model on device: %s", next(network.parameters()).is_cuda)
+
     optimizer = torch.optim.AdamW(network.parameters(), lr=config["INFO"]["LR"])
     scheduler = util.WrmUpCosinScheduler(
         optimizer, config["INFO"]["warmup epochs"], epochs, config["INFO"]["LR"]

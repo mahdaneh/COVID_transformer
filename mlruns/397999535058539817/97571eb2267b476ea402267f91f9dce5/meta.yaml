@@ -1,0 +1,14 @@
+artifact_uri: file:///home/mahdieh/Documents/Project/COVID_transformer/mlruns/397999535058539817/97571eb2267b476ea402267f91f9dce5/artifacts
+end_time: 1763670088868
+entry_point_name: ''
+experiment_id: '397999535058539817'
+lifecycle_stage: active
+run_id: 97571eb2267b476ea402267f91f9dce5
+run_name: Res_VIT
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763670067774
+status: 3
+tags: [ ]
+user_id: mahdieh

@@ -1,16 +1,17 @@
-import torch
 import math
+
+import torch
 
 
 class WrmUpCosinScheduler(torch.optim.lr_scheduler.LRScheduler):
     def __init__(
-        self,
-        optimizer,
-        warmup_epochs,
-        total_epochs,
-        base_lr,
-        lr_min=1e-10,
-        last_epoch=-1,
+            self,
+            optimizer,
+            warmup_epochs,
+            total_epochs,
+            base_lr,
+            lr_min=1e-10,
+            last_epoch=-1,
     ):
         self.base_lr = base_lr
         self.warmup_epochs = warmup_epochs
@@ -28,7 +29,7 @@ class WrmUpCosinScheduler(torch.optim.lr_scheduler.LRScheduler):
                 max(1, self.total_epochs - self.warmup_epochs)
             )
             lr = self.lr_min + 0.5 * (self.base_lr - self.lr_min) * (
-                1 + math.cos(progress * math.pi)
+                    1 + math.cos(progress * math.pi)
             )
 
         return [torch.tensor(lr)]
