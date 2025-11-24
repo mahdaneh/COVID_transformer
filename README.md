@@ -1,28 +1,34 @@
 # COVID_transformer 
 
-This project implements a Vision Transformer (ViT) for COVID-19 detection from chest X-rays, and benchmarks performance against:
+## Overview
+This project implements a Vision Transformer (ViT) for COVID-19 detection from chest X-rays,
+and benchmarks performance against:
 
 - **ResNet-18** (standard CNN)  
-- **ResNet-18 + ViT head** (where the ResNet backbone is frozen and the ViT head is trained)  
+- **ResNet-18 + ViT head** (i.e. ResNet backbone, pretrained on ImageNet1K and frozen for this task; and the ViT head, not pre-trained)  
+- **ViT**
+
+Note that the ViT model is implemented from scratch (for learning purposes), and never pre-trained on any image dataset.
 
 The goal is to explore the effectiveness of transformer-based models on medical imaging, particularly in distinguishing COVID-19 cases in CXR data.
+Our results (below) show that ViT-based models are *ineffective when they are not pre-trained*,
+highlighting the importance of large-scale pretraining. Access to a substantially large training dataset is essential for developing a ViT model that generalizes well and achieves high accuracy.
+In other words, transformers do not generalize reliably when trained on limited data.
 
-## Overview
 
-This repository implements a Vision Transformer and compare it with Resnet18 and a Resnet18 backbone with VIT head
-models on chest xray images.
+
 
 ### Dataset 
 - The repository uses the **COVID-QU-Ex** dataset, which contains 33,920 chest X-ray images [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu).
 - This is a multiclass dataset with classes: COVID-19, Normal, and Pneumonia/Non-COVID.
-- The dataset comprises three sets: Train, Val, Test. 
+- The dataset comprises three sets: Train, Val, Test. The following image summarizes this dataset. 
 
 ![Sample frequencies per class across datasets](docs/data_summary.png)
 
 ### Training
 3 models including VIT, Resnet18, and VIT head with Res18 backbone (frozen) are trained and evaluated on Covid-QU-EX
 dataset.
-#### Notes
+#### Training Notes
 - AdamW optimizer with weight decay (AdamW provides better regularization than Adam.)
 - Ensure dataset class balance to avoid biased predictions.
 - Warm-up + cosine annealing learning rate strategy with small base learning rate
