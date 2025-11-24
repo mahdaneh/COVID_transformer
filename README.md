@@ -11,7 +11,7 @@ and benchmarks performance against:
 Note that the ViT model is implemented from scratch (for learning purposes), and never pre-trained on any image dataset.
 
 The goal is to explore the effectiveness of transformer-based models on medical imaging, particularly in distinguishing COVID-19 cases in CXR data.
-Our results (below) show that ViT-based models are *ineffective when they are not pre-trained*,
+Our results (below) show that ViT-based models are **ineffective when they are not pre-trained**,
 highlighting the importance of large-scale pretraining. Access to a substantially large training dataset is essential for developing a ViT model that generalizes well and achieves high accuracy.
 In other words, transformers do not generalize reliably when trained on limited data.
 
@@ -19,7 +19,7 @@ In other words, transformers do not generalize reliably when trained on limited 
 
 
 ### Dataset 
-- The repository uses the **COVID-QU-Ex** dataset, which contains 33,920 chest X-ray images [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu).
+- The repository uses the **COVID-QU-Ex** dataset, which contains 33,920 chest X-ray images. This dataset can be found [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu).
 - This is a multiclass dataset with classes: COVID-19, Normal, and Pneumonia/Non-COVID.
 - The dataset comprises three sets: Train, Val, Test. The following image summarizes this dataset. 
 
