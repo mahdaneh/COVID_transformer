@@ -39,7 +39,7 @@ class HeadAttention(nn.Module):
         self.V = nn.Linear(embed_dim, head_dim, bias=False)
         self.K = nn.Linear(embed_dim, head_dim, bias=False)
         self.softmax = nn.Softmax(dim=-1)
-        self.dropout = nn.Dropout(dropout)
+
 
     def forward(self, z):
         Q_z = self.Q(z)  # z\in[B,D]*w\in[D, D_h] -> [B,D_h]

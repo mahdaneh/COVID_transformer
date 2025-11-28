@@ -81,7 +81,7 @@ def train_eval(config_file, args):
     network.to(device)
 
     wandb.watch(network, log="all")
-    logger.info("%s model on device: %s", next(network.parameters()).is_cuda)
+    logger.info("model on device: %s", next(network.parameters()).is_cuda)
 
     optimizer = torch.optim.AdamW(network.parameters(), lr=config["INFO"]["LR"])
     scheduler = util.WrmUpCosinScheduler(

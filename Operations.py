@@ -133,8 +133,11 @@ def build_model(config):
         # backbone.requires_grad_(False)  # to freeze backbone
         vit = VIT(config["VIT"])
         network = nn.Sequential(backbone, vit)
+    elif net_name == "tv_vit_b_16":
+        network = models.vit_b_16(weights=models.ViT_B_16_Weights.IMAGENET1K_V1)
     else:
         raise NotImplementedError
-    return network
 
     return network
+
+

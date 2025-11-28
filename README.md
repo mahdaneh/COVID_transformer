@@ -1,7 +1,10 @@
 # COVID_transformer 
 
 ## Overview
-This project implements a Vision Transformer (ViT) for COVID-19 detection from chest X-rays,
+**Purpose**: personal study project to play with Vision Transformer (ViT) architecture on medical imaging data.
+Due to GPU limitations, the model is kept tiny (i.e. few layers, small embedding dimension, few heads, etc.) to allow training from scratch on a single GPU.
+
+This project implements a tiny Vision Transformer (ViT) for COVID-19 detection from chest X-rays,
 and benchmarks performance against:
 
 - **ResNet-18** (standard CNN)  
