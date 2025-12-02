@@ -4,7 +4,8 @@ import logging
 from pathlib import Path
 
 import torch
-import wandb
+# import wandb
+import trackio as wandb
 from torch.utils.data import DataLoader
 
 import Operations as op
@@ -80,7 +81,7 @@ def train_eval(config_file, args):
     # network = torch.compile(network)
     network.to(device)
 
-    wandb.watch(network, log="all")
+    # wandb.watch(network, log="all")
     logger.info("model on device: %s", next(network.parameters()).is_cuda)
 
     optimizer = torch.optim.AdamW(network.parameters(), lr=config["INFO"]["LR"])
@@ -108,8 +109,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args_def = {
         "config": {"type": str, "default": ""},
-        "restart": {"type": bool, "default": True},
-        "start_epoch": {"type": int, "default": 1},
+
+        "resume_epoch": {"type": int, "default": 1},
     }
     for k, v in args_def.items():
         if v != args_def[k]["default"]:

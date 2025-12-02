@@ -20,7 +20,22 @@ def train_eval(
 ):
     CE_loss = torch.nn.CrossEntropyLoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    pbar = tqdm(range(epochs))
+    start_epoch = 0
+    if args.resume_epoch > 1:
+        checkpoint_path = weights_fldr.joinpath(
+            "%s_checkpoint_%d.pth" % (run_name, args.resume_epoch)
+        )
+        logger.info(f"Resuming training from epoch {args.resume_epoch} from {checkpoint_path}")
+        checkpoint = torch.load(checkpoint_path)
+        # network.load_state_dict(checkpoint)
+        network.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_epoch = checkpoint['epoch']
+        # start_epoch = args.resume_epoch
+        logger.info("Resumed from checkpoint: %s", str(checkpoint_path))
+
+    pbar = tqdm(range(start_epoch+1,epochs))
 
     for epoch in pbar:
         tr_acc, tr_loss, val_acc, val_loss = 0, 0, 0, 0
@@ -63,12 +78,16 @@ def train_eval(
 
         pbar.set_description(str(info_log))
 
-        torch.save(
-            network.state_dict(),
-            weights_fldr.joinpath("%s_checkpoint_%d.pth" % (run_name, epoch)),
-        )
 
         if epoch % 5 == 0 or (epochs - epoch) < 5:  # every 5 epochs
+            torch.save(
+                {"epoch": epoch,
+                 "model_state_dict": network.state_dict(),
+                 "optimizer_state_dict": optimizer.state_dict(),
+                 "scheduler_state_dict": scheduler.state_dict()
+                 },
+                weights_fldr.joinpath("%s_checkpoint_%d.pth" % (run_name, epoch)),
+            )
             log, _, _ = evaluation(network, val_loader, loss=CE_loss)
             info_log |= log
 

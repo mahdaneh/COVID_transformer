@@ -6,7 +6,7 @@ def run_agent():
     #
     print("======== resnet_vit")
     res_vit = subprocess.check_output(
-        ["python3", "run_train_eval.py", "--config", "configs/Res_VIT_deep.json"]
+        ["python3", "run_train_eval.py", "--config", "configs/TV_VIT_b_16.json"]
     )
 
     # print("vit model")
