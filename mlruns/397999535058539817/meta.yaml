@@ -1,6 +1,0 @@
-artifact_location: file:///home/mahdieh/Documents/Project/COVID_transformer/mlruns/397999535058539817
-creation_time: 1763660060111
-experiment_id: '397999535058539817'
-last_update_time: 1763660060111
-lifecycle_stage: active
-name: model_comparison_TestSet

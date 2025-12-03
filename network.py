@@ -40,7 +40,6 @@ class HeadAttention(nn.Module):
         self.K = nn.Linear(embed_dim, head_dim, bias=False)
         self.softmax = nn.Softmax(dim=-1)
 
-
     def forward(self, z):
         Q_z = self.Q(z)  # z\in[B,D]*w\in[D, D_h] -> [B,D_h]
         V_z = self.V(z)
@@ -114,7 +113,7 @@ class VIT(nn.Module):
             ]
         )
         self.MLP_cls = nn.Sequential(
-            nn.Linear(embed_dim, num_classes, bias=True), nn.Softmax(dim=1)
+            nn.Linear(embed_dim, num_classes, bias=True)
         )
 
     def forward(self, image):

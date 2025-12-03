@@ -12,7 +12,7 @@
       "Non-COVID",
       "Normal"
     ],
-    "batch size": 300,
+    "batch size": 40,
     "image size": [
       3,
       224,

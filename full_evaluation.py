@@ -1,6 +1,5 @@
 import json
-
-import matplotlib.pyplot as plt
+import numpy as np
 import mlflow
 import torch
 from ptflops import get_model_complexity_info
@@ -12,16 +11,22 @@ import dataset_repo as d_repo
 
 
 def load_model(model_path):
-    model_config_path = model_path.replace("weights", "configs").replace(
-        "_checkpoint_99.pth", ".json"
+    model_config_path = (
+        model_path.rsplit("_checkpoint_")[0].replace("weights", "configs") + ".json"
     )
+    # model_config_path = model_path.replace("weights", "configs").replace(
+    #     "_checkpoint_99.pth", ".json"
+    # )
     with open(model_config_path) as f:
         config_dict = json.load(f)
 
     model_state_dict = torch.load(model_path)
     # with torch.device("meta"):
     model = ops.build_model(config_dict)
-    model.load_state_dict(model_state_dict, assign=True)
+    if model_state_dict.keys().__contains__("model_state_dict"):
+        model.load_state_dict(model_state_dict["model_state_dict"], assign=True)
+    else:
+        model.load_state_dict(model_state_dict)
     model.eval()
     return model
 
@@ -61,6 +66,8 @@ def model_evaluation():
     # List of models to evaluate
 
     model_path = [
+        ("TV_VIT_16_b", "weights/TV_VIT_b_16_checkpoint_97.pth"),
+        ("My_VIT_16_b", "weights/My_VIT_b_16__checkpoint_96.pth"),
         ("VIT", "weights/VIT_QU_EX_deep_checkpoint_99.pth"),
         ("Resnet", "weights/Resnet_QU_EX_checkpoint_99.pth"),
         ("Res_VIT", "weights/Res_VIT_deep_checkpoint_99.pth"),
@@ -78,29 +85,38 @@ def model_evaluation():
 
             metrics_dict = {}
             p, r, f1, s = precision_recall_fscore_support(y_true, y_pred)
+
             accuracy = accuracy_score(y_true, y_pred)
             for i, cls in enumerate(class_names):
                 metrics_dict["precision_class_%s" % cls] = p[i]
                 metrics_dict["recall_class_%s" % cls] = r[i]
                 metrics_dict["f1_class_%s" % cls] = f1[i]
                 metrics_dict["support_class_%s" % cls] = s[i]
-            mlflow.log_metrics(metrics_dict)
 
             p, r, f1, s = precision_recall_fscore_support(
                 y_true, y_pred, average="macro"
             )
-            mlflow.log_metric("precision_macro", p)
-            mlflow.log_metric("recall_macro", r)
-            mlflow.log_metric("f1_macro", f1)
-            mlflow.log_metric("accuracy", accuracy)
-            print(f"accuracy {accuracy}")
+            metrics_dict["precision_macro"] = p
+            metrics_dict["recall_macro"] = r
+            metrics_dict["f1_macro"] = f1
+            metrics_dict["accuracy"] = accuracy
 
-            mlflow.log_text(str(flops), "calc.txt")
-            mlflow.log_text(str(params), "calc.txt")
+
+            mlflow.log_metrics(metrics_dict)
+            mlflow.log_text(str(flops), "flops_params_%s.txt"%name)
+            mlflow.log_text(str(params), "flops_params_%s.txt"%name)
+
             cm = confusion_matrix(y_true, y_pred)
-            disp = ConfusionMatrixDisplay(cm, display_labels=class_names)
-            disp.plot()
-            plt.savefig("docs/confusion_matrix_%s.png" % name)
+
+            path_cm = "mlruns/%s_cm.npy" % name
+
+
+            np.save(path_cm, cm)
+            mlflow.log_artifact(path_cm)
+
+            # disp = ConfusionMatrixDisplay(cm, display_labels=class_names)
+            # disp.plot()
+            # plt.savefig("docs/confusion_matrix_%s.png" % name)
 
 
 if __name__ == "__main__":

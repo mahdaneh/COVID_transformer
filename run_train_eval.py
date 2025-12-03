@@ -89,7 +89,7 @@ def train_eval(config_file, args):
         optimizer, config["INFO"]["warmup epochs"], epochs, config["INFO"]["LR"]
     )
 
-    info_log = op.train_eval(
+    info_log = op.train_valid(
         weights_folder,
         run_name,
         train_loader,
@@ -109,7 +109,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args_def = {
         "config": {"type": str, "default": ""},
-
         "resume_epoch": {"type": int, "default": 1},
     }
     for k, v in args_def.items():

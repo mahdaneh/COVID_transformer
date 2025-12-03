@@ -1,22 +1,23 @@
+import numpy as np
 from torchvision import models
 from tqdm import tqdm
 
 from network import *
 
 
-def train_eval(
-        weights_fldr,
-        run_name,
-        train_loader,
-        val_loader,
-        network,
-        optimizer,
-        scheduler,
-        epochs,
-        accumulation_step,
-        logger,
-        wandb,
-        args,
+def train_valid(
+    weights_fldr,
+    run_name,
+    train_loader,
+    val_loader,
+    network,
+    optimizer,
+    scheduler,
+    epochs,
+    accumulation_step,
+    logger,
+    wandb,
+    args,
 ):
     CE_loss = torch.nn.CrossEntropyLoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -25,17 +26,19 @@ def train_eval(
         checkpoint_path = weights_fldr.joinpath(
             "%s_checkpoint_%d.pth" % (run_name, args.resume_epoch)
         )
-        logger.info(f"Resuming training from epoch {args.resume_epoch} from {checkpoint_path}")
+        logger.info(
+            f"Resuming training from epoch {args.resume_epoch} from {checkpoint_path}"
+        )
         checkpoint = torch.load(checkpoint_path)
         # network.load_state_dict(checkpoint)
-        network.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        start_epoch = checkpoint['epoch']
+        network.load_state_dict(checkpoint["model_state_dict"])
+        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        start_epoch = checkpoint["epoch"]
         # start_epoch = args.resume_epoch
         logger.info("Resumed from checkpoint: %s", str(checkpoint_path))
 
-    pbar = tqdm(range(start_epoch+1,epochs))
+    pbar = tqdm(range(start_epoch + 1, epochs))
 
     for epoch in pbar:
         tr_acc, tr_loss, val_acc, val_loss = 0, 0, 0, 0
@@ -78,14 +81,14 @@ def train_eval(
 
         pbar.set_description(str(info_log))
 
-
         if epoch % 5 == 0 or (epochs - epoch) < 5:  # every 5 epochs
             torch.save(
-                {"epoch": epoch,
-                 "model_state_dict": network.state_dict(),
-                 "optimizer_state_dict": optimizer.state_dict(),
-                 "scheduler_state_dict": scheduler.state_dict()
-                 },
+                {
+                    "epoch": epoch,
+                    "model_state_dict": network.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict(),
+                    "scheduler_state_dict": scheduler.state_dict(),
+                },
                 weights_fldr.joinpath("%s_checkpoint_%d.pth" % (run_name, epoch)),
             )
             log, _, _ = evaluation(network, val_loader, loss=CE_loss)
@@ -98,7 +101,7 @@ def train_eval(
 
 
 def evaluation(
-        network, val_loader, device=torch.device("cuda"), loss=torch.nn.CrossEntropyLoss()
+    network, val_loader, device=torch.device("cuda"), loss=torch.nn.CrossEntropyLoss()
 ):
     val_loss = 0
     val_acc = 0
@@ -113,8 +116,8 @@ def evaluation(
 
             class_prediction = torch.argmax(prediction, dim=1)
 
-            predictions.extend(class_prediction.cpu().numpy())
-            true_labels.extend(labels.cpu().numpy())
+            predictions.append(class_prediction.cpu().numpy())
+            true_labels.append(labels.cpu().numpy())
 
             val_acc += torch.mean(
                 torch.where(class_prediction == labels, 1.0, 0.0)
@@ -123,7 +126,12 @@ def evaluation(
             "eval_loss": val_loss / (eval_b + 1),
             "eval_acc": val_acc / (eval_b + 1),
         }
-        return info_log, predictions, true_labels
+        # import pdb;pdb.set_trace()
+        return (
+            info_log,
+            np.concatenate(predictions).ravel(),
+            np.concatenate(true_labels).ravel(),
+        )
 
 
 def build_model(config):
@@ -138,7 +146,6 @@ def build_model(config):
             nn.Linear(in_features, 128),
             nn.ReLU(),
             nn.Linear(128, 3),
-            nn.Softmax(dim=1),
         )
         network.fc = fc_layers
 
@@ -154,9 +161,12 @@ def build_model(config):
         network = nn.Sequential(backbone, vit)
     elif net_name == "tv_vit_b_16":
         network = models.vit_b_16(weights=models.ViT_B_16_Weights.IMAGENET1K_V1)
+        in_features = network.heads.head.in_features
+        fc_layers = torch.nn.Sequential(
+            nn.Linear(in_features, 3,bias=True),
+        )
+        network.heads = fc_layers
     else:
         raise NotImplementedError
 
     return network
-
-

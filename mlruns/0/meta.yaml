@@ -1,6 +1,6 @@
-artifact_location: file:///home/mahdieh/Documents/Project/COVID_transformer/mlruns/0
-creation_time: 1763660060107
+artifact_location: mlflow-artifacts:/0
+creation_time: 1764787951160
 experiment_id: '0'
-last_update_time: 1763660060107
+last_update_time: 1764787951160
 lifecycle_stage: active
 name: Default
