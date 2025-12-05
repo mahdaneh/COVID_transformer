@@ -30,7 +30,7 @@ Train each model using its corresponding config file, available in `configs/` fo
 ``python run_train_eval.py --config configs/TV_VIT_b_16.json``
 To train other models, you could find other config files in ``config`` folder.
 
-![Training curves of the models](docs/comparison.png)
+
 
 ### Evaluation
 
@@ -46,6 +46,6 @@ The following results show that ViT-based models outperform ResNet-18 by a signi
 ![F1-score per class](docs/f1_score_perclass.png) ![Precision per class](docs/Precision_perclass.png) ![Recall per class](docs/Recall_perclass.png)
 | Res18                                 | VIT_b_16                               |
 |---------------------------------------|----------------------------------------|
-| ![](docs/confusion_matrix_Resnet.png) | ![](docs/confusion_matrix_TV_vit_b_16) |
+| ![](docs/confusion_matrix_Resnet.png) | ![](docs/confusion_matrix_TV_vit_b_16.png) |
 
 
