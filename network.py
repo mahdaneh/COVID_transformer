@@ -20,6 +20,7 @@ class InputEmbbeding(nn.Module):
 
     def forward(self, x):
         n_batches = x.size(0)
+        # import pdb;pdb.set_trace()
         x = x.view(n_batches, self.num_patches, self.input_dim)
         # linear projection
         x = self.linear_project(x)
@@ -112,9 +113,7 @@ class VIT(nn.Module):
                 for _ in range(num_layers)
             ]
         )
-        self.MLP_cls = nn.Sequential(
-            nn.Linear(embed_dim, num_classes, bias=True)
-        )
+        self.MLP_cls = nn.Sequential(nn.Linear(embed_dim, num_classes, bias=True))
 
     def forward(self, image):
         x = self.input_embed(image)

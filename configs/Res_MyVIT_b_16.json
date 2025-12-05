@@ -1,0 +1,37 @@
+{
+  "INFO": {
+    "wandb project": "XRay-Classification",
+    "net name": "resnet_VIT",
+    "batch size": 40,
+    "accumulation step": 16,
+    "LR": 1e-6,
+    "warmup epochs": 20,
+    "epochs": 100
+  },
+  "DATA": {
+    "data dir": "/home/mahdieh/Documents/Datasets/COVID/COVID-QU-Ex/Lung_Segmentation_Data",
+    "label names": [
+      "COVID",
+      "Non-COVID",
+      "Normal"
+    ],
+    "image size": [
+      3,
+      224,
+      224
+    ]
+  },
+   "VIT": {
+    "input size": [
+      64,
+      56,
+      56
+    ],
+    "patch size": 14,
+    "embd dim": 768,
+    "mlp dim": 3072,
+    "num heads": 12,
+    "num layers": 12,
+    "num classes": 3
+  }
+}

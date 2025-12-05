@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 
 import torch
+
 # import wandb
 import trackio as wandb
 from torch.utils.data import DataLoader
@@ -109,7 +110,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args_def = {
         "config": {"type": str, "default": ""},
-        "resume_epoch": {"type": int, "default": 1},
+        "resume": {"type": int, "default": 0},
+        "checkpoint_path": {"type": str, "default": ""},  # Path to checkpoint file
     }
     for k, v in args_def.items():
         if v != args_def[k]["default"]:

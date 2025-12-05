@@ -22,21 +22,23 @@ def train_valid(
     CE_loss = torch.nn.CrossEntropyLoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     start_epoch = 0
-    if args.resume_epoch > 1:
-        checkpoint_path = weights_fldr.joinpath(
-            "%s_checkpoint_%d.pth" % (run_name, args.resume_epoch)
-        )
-        logger.info(
-            f"Resuming training from epoch {args.resume_epoch} from {checkpoint_path}"
-        )
+    checkpoint_path = args.checkpoint_path
+    logger.info(f"Loading weights from {checkpoint_path}")
+
+    if checkpoint_path != "":
         checkpoint = torch.load(checkpoint_path)
         # network.load_state_dict(checkpoint)
         network.load_state_dict(checkpoint["model_state_dict"])
-        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-        scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
-        start_epoch = checkpoint["epoch"]
-        # start_epoch = args.resume_epoch
-        logger.info("Resumed from checkpoint: %s", str(checkpoint_path))
+        if args.resume > 0:
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+            scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+            start_epoch = checkpoint["epoch"]
+
+            logger.info("Continued training from checkpoint: %s", str(checkpoint_path))
+        else:
+            logger.info(
+                "Start training from pre-trained weights from: %s", str(checkpoint_path)
+            )
 
     pbar = tqdm(range(start_epoch + 1, epochs))
 
@@ -136,9 +138,8 @@ def evaluation(
 
 def build_model(config):
     net_name = config["INFO"]["net name"]
-    if net_name == "VIT":
-        network = VIT(config["VIT"])
-    elif net_name == "ResNet":
+
+    if net_name == "ResNet":
         network = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         # Replace the final fully connected (fc) layer:
         in_features = network.fc.in_features
@@ -149,23 +150,26 @@ def build_model(config):
         )
         network.fc = fc_layers
 
-    elif net_name == "resnet_VIT":
-        resnet = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
-
-        backbone = nn.Sequential(*list(resnet.children())[:4])
-        for child in list(backbone.children())[:2]:
-            for p in child.parameters():
-                p.requires_grad = False
-        # backbone.requires_grad_(False)  # to freeze backbone
-        vit = VIT(config["VIT"])
-        network = nn.Sequential(backbone, vit)
     elif net_name == "tv_vit_b_16":
         network = models.vit_b_16(weights=models.ViT_B_16_Weights.IMAGENET1K_V1)
         in_features = network.heads.head.in_features
         fc_layers = torch.nn.Sequential(
-            nn.Linear(in_features, 3,bias=True),
+            nn.Linear(in_features, 3, bias=True),
         )
         network.heads = fc_layers
+
+    elif net_name == "resnet_VIT":
+        resnet = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+
+        backbone = nn.Sequential(*list(resnet.children())[:4])
+        # for child in list(backbone.children())[:2]:
+        #     for p in child.parameters():
+        #         p.requires_grad = False
+        # backbone.requires_grad_(False)  # to freeze all layers of backbone
+        vit = VIT(config["VIT"])
+        network = nn.Sequential(backbone, vit)
+    elif net_name == "VIT":
+        network = VIT(config["VIT"])
     else:
         raise NotImplementedError
 

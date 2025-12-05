@@ -14,11 +14,13 @@ def load_model(model_path):
     model_config_path = (
         model_path.rsplit("_checkpoint_")[0].replace("weights", "configs") + ".json"
     )
-    # model_config_path = model_path.replace("weights", "configs").replace(
-    #     "_checkpoint_99.pth", ".json"
-    # )
+
     with open(model_config_path) as f:
         config_dict = json.load(f)
+
+    print(
+        "===== Loading model from %s with config %s" % (model_path, model_config_path)
+    )
 
     model_state_dict = torch.load(model_path)
     # with torch.device("meta"):
@@ -66,14 +68,11 @@ def model_evaluation():
     # List of models to evaluate
 
     model_path = [
-        ("TV_VIT_16_b", "weights/TV_VIT_b_16_checkpoint_97.pth"),
-        ("My_VIT_16_b", "weights/My_VIT_b_16__checkpoint_96.pth"),
-        ("VIT", "weights/VIT_QU_EX_deep_checkpoint_99.pth"),
-        ("Resnet", "weights/Resnet_QU_EX_checkpoint_99.pth"),
-        ("Res_VIT", "weights/Res_VIT_deep_checkpoint_99.pth"),
+        ("TV_VIT_16_b", "weights/TV_VIT_b_16_checkpoint_99.pth"),
+        ("Resnet18", "weights/Resnet_checkpoint_99.pth"),
     ]
 
-    experiment_name = "model_comparison_TestSet"
+    experiment_name = "Final_Comparison_Models"
     mlflow.set_experiment(experiment_name)
 
     for name, path in model_path:
@@ -101,15 +100,14 @@ def model_evaluation():
             metrics_dict["f1_macro"] = f1
             metrics_dict["accuracy"] = accuracy
 
-
             mlflow.log_metrics(metrics_dict)
-            mlflow.log_text(str(flops), "flops_params_%s.txt"%name)
-            mlflow.log_text(str(params), "flops_params_%s.txt"%name)
+            mlflow.log_text(
+                str(flops + "/n" + str(params)), "flops_params_%s.txt" % name
+            )
 
             cm = confusion_matrix(y_true, y_pred)
 
             path_cm = "mlruns/%s_cm.npy" % name
-
 
             np.save(path_cm, cm)
             mlflow.log_artifact(path_cm)

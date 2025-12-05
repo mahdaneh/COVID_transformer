@@ -1,25 +1,12 @@
 # COVID_transformer 
 
 ## Overview
-**Purpose**: personal study project to play with Vision Transformer (ViT) architecture on medical imaging data.
-Due to GPU limitations, the model is kept tiny (i.e. few layers, small embedding dimension, few heads, etc.) to allow training from scratch on a single GPU.
+**Purpose**: It is a self-study project to play with Vision Transformer (ViT) architecture for COVID-19 detection from chest X-rays. Then, benchmark its performance
+against a standard CNN architecture (ResNet-18).
 
-This project implements a tiny Vision Transformer (ViT) for COVID-19 detection from chest X-rays,
-and benchmarks performance against:
+A base VIT model with 16x16 patches is used in this small study. The model and ResNet-18 are pretrained on ImageNet-1k and fine-tuned on COVID-QU-Ex dataset.
 
-- **ResNet-18** (standard CNN)  
-- **ResNet-18 + ViT head** (i.e. ResNet backbone, pretrained on ImageNet1K and frozen for this task; and the ViT head, not pre-trained)  
-- **ViT**
-
-Note that the ViT model is implemented from scratch (for learning purposes), and never pre-trained on any image dataset.
-
-The goal is to explore the effectiveness of transformer-based models on medical imaging, particularly in distinguishing COVID-19 cases in CXR data.
-Our results (below) show that ViT-based models are **ineffective when they are not pre-trained**,
-highlighting the importance of large-scale pretraining. Access to a substantially large training dataset is essential for developing a ViT model that generalizes well and achieves high accuracy.
-In other words, transformers do not generalize reliably when trained on limited data.
-
-
-
+Our results (below) show that ViT-based models outperform ResNet-18 by a significant margin, on all metrics (accuracy, precision, recall, f1-score).
 
 ### Dataset 
 - The repository uses the **COVID-QU-Ex** dataset, which contains 33,920 chest X-ray images. This dataset can be found [here](https://www.kaggle.com/datasets/anasmohammedtahir/covidqu).
@@ -28,9 +15,6 @@ In other words, transformers do not generalize reliably when trained on limited 
 
 ![Sample frequencies per class across datasets](docs/data_summary.png)
 
-### Training
-3 models including VIT, Resnet18, and VIT head with Res18 backbone (frozen) are trained and evaluated on Covid-QU-EX
-dataset.
 #### Training Notes
 - AdamW optimizer with weight decay (AdamW provides better regularization than Adam.)
 - Ensure dataset class balance to avoid biased predictions.
@@ -38,7 +22,7 @@ dataset.
 
 Train each model using its corresponding config file, available in `configs/` folder. For example:
 
-``python run_train_eval.py --config configs/VIT_QU_EX.json``
+``python run_train_eval.py --config configs/TV_VIT_b_16.json``
 To train other models, you could find other config files in ``config`` folder.
 
 ![Training curves of the models](docs/comparison.png)
@@ -48,15 +32,14 @@ To train other models, you could find other config files in ``config`` folder.
 On "Test" set, we compare the three models by acc, precision, recall, f_score. The confusion
 matrices als show the models performance for classes.  
 
-| Model Name   | Acc    | Precision   | Recall   | f_score   |
-|--------------|--------|-------------|----------|-----------|
-| Res18        | 89.9   | 89.9        | 89.8     | 89.7      |
-| VIT          | 72.7   | 73.3        | 73.1     | 73        |
-| Res18+VIT    | 68.6   | 69.5        | 68.7     | 68.8      |
+| Model Name | Acc   | Precision | Recall | f1_score | parameters |
+|------------|-------|-----------|--------|----------| -----------|
+| Res18      | 82.56 | 82.66     | 82.41  | 82.37    |11.24M      |
+| VIT_b_16   | 87.51 | 87.45     | 87.37  | 87.33    |85.8M       |
 
 
-| Res18                                 | VIT                                | Res18+VIT                              |
-|---------------------------------------|------------------------------------|----------------------------------------|
-| ![](docs/confusion_matrix_Resnet.png) | ![](docs/confusion_matrix_VIT.png) | ![](docs/confusion_matrix_Res_VIT.png) |
+| Res18                                 | VIT_b_16                               |
+|---------------------------------------|----------------------------------------|
+| ![](docs/confusion_matrix_Resnet.png) | ![](docs/confusion_matrix_TV_vit_b_16) |
 
 
