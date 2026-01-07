@@ -35,9 +35,9 @@ To train other models, you could find other config files in ``config`` folder.
 ### Evaluation
 
 On "Test" set, we compare the three models by acc, precision, recall, f_score. The confusion
-matrices als show the models performance for classes.  
+matrices also show the models performance for classes.  
 
-The following results show that ViT-based models outperform ResNet-18 by a significant margin, on all metrics (accuracy, precision, recall, f1-score). However, ViT has many more parameters than ResNet-18.
+The following results show that ViT-based models outperform ResNet-18 by a significant margin, on all metrics (accuracy, precision, recall, f1-score). However, ViT has many more parameters than ResNet-18, making training it challenging for restricted-resource devices like laptop GPU.
 | Model Name | Acc   | Precision | Recall | f1_score | parameters |
 |------------|-------|-----------|--------|----------| -----------|
 | Res18      | 82.56 | 82.66     | 82.41  | 82.37    |11.24M      |
