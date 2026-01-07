@@ -1,8 +1,6 @@
-# COVID_Transformer
+# Transformers for COVID-19 Detection from Chest X-Rays
 
-## Overview
 
-**Purpose:**
 This is a self-study project exploring **Vision Transformer (ViT)** architectures for COVID-19 detection from chest X-rays, and benchmarking their performance against a standard CNN architecture (ResNet-18).
 
 We use a base ViT model with 16×16 patches, pretrained on ImageNet-1k, and fine-tuned on the **COVID-QU-Ex dataset**.
@@ -38,13 +36,6 @@ Training strategies used:
 
 Train models using the corresponding config file in the `configs/` folder. Example:
 
-```bash
-python run_train_eval.py --config configs/TV_VIT_b_16.json
-```
-
-Other models can be trained using their respective config files in the `configs/` folder.
-
----
 
 ## Evaluation
 
