@@ -32,7 +32,7 @@ Training strategies used:
 
 * **Optimizer:** AdamW (better regularization than Adam)
 * **Learning rate schedule:** Warm-up + Cosine Annealing
-* ** Gradient accumulation:** Used to simulate larger batch sizes on limited GPU memory
+* **Gradient accumulation:** Used to simulate larger batch sizes on limited GPU memory
 * **Class balance:** Ensured balanced batches to avoid biased predictions
 
 Train models using the corresponding config file in the `configs/` folder. Example:
