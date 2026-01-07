@@ -3,7 +3,7 @@
 
 This is a self-study project exploring **Vision Transformer (ViT)** architectures for COVID-19 detection from chest X-rays, and benchmarking their performance against a standard CNN architecture (ResNet-18).
 
-We use a base ViT model with 16×16 patches, pretrained on ImageNet-1k, and fine-tuned on the **COVID-QU-Ex dataset**.
+Pretrained ViT (16×16 patches) and ResNet-18 models (ImageNet-1k) are fine-tuned on the **COVID-QU-Ex dataset**.
 
 ---
 
@@ -32,9 +32,18 @@ Training strategies used:
 
 * **Optimizer:** AdamW (better regularization than Adam)
 * **Learning rate schedule:** Warm-up + Cosine Annealing
+* ** Gradient accumulation:** Used to simulate larger batch sizes on limited GPU memory
 * **Class balance:** Ensured balanced batches to avoid biased predictions
 
 Train models using the corresponding config file in the `configs/` folder. Example:
+
+```bash
+python run_train_eval.py --config configs/TV_VIT_b_16.json
+```
+
+Other models can be trained using their respective config files in the configs/ folder.
+
+
 
 
 ## Evaluation
@@ -60,6 +69,7 @@ Models are compared on the **Test set** using accuracy, precision, recall, and F
 
 ### Key Insights
 
-* ViT-based models **outperform ResNet-18** on all metrics.
-* ViTs have **significantly more parameters**, making them harder to train on resource-constrained devices (e.g., laptop GPUs).
+* ViT-based models **outperform ResNet-18** across all metrics while demonstrating how to scale transformer models efficiently.
+* ViTs have significantly more parameters, making them harder to train on resource-constrained devices (e.g., laptop GPUs).
 * This study demonstrates the effectiveness of **transformer architectures for medical image classification** and provides a benchmark for future experiments.
+* The pipeline supports GPU-limited training by providing configuration for batch size, optimizer, and memory-efficient practices.
